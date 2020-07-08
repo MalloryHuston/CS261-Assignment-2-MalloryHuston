@@ -1,7 +1,7 @@
 # Course: CS261 - Data Structures
 # Student Name:
 # Assignment:
-# Description:
+# Description: Implementation of the Queue ADT class as described in the given specifications.
 
 from dynamic_array import *
 
