@@ -31,42 +31,73 @@ class Bag:
 
     def add(self, value: object) -> None:
         """
-        TODO: Write this implementation
+        Add a specified element to the Bag
         """
-        return
+        self.da.append(value)
 
     def remove(self, value: object) -> bool:
         """
-        TODO: Write this implementation
+        Remove a single element from bag matching value argument passed
         """
+        # iterate through objects in bag and remove if found
+        for index in range(self.da.size):
+            if self.da.data[index] == value:
+                self.da.remove_at_index(index)
+                return True
+
+        # return false if no object was found and removed
         return False
 
     def count(self, value: object) -> int:
         """
-        TODO: Write this implementation
+        Count the number of elements in the Bag matching value argument
         """
-        return 0
+        # iterate through elements manually and count elements matching value
+        count = 0
+        for index in range(self.da.size):
+            if self.da.data[index] == value:
+                count += 1
+
+        return count
 
     def clear(self) -> None:
         """
-        TODO: Write this implementation
+        Clear the contents of the Bag
         """
-        return
+        # iterate through elements and remove
+        for index in range(self.da.size - 1, -1, -1):
+            self.da.remove_at_index(index)
 
     def size(self) -> int:
         """
-        TODO: Write this implementation
+        Return the number of elements currently in the Bag
         """
-        return 0
+        return self.da.size
 
     def equal(self, second_bag: object) -> bool:
         """
-        TODO: Write this implementation
+        Indicates whether the current Bag is equal to the second Bag object
         """
-        return False
+        # handle case where size of bags differs
+        if self.size() != second_bag.size():
+            return False
 
+        # iterate through elements in self and determine whether they exist in second_bag
+        for index_1 in range(self.size()):
+            exists = False
+            index_2 = 0
+            while exists == False and index_2 < second_bag.size():
+                if self.da.data[index_1] == second_bag.da.data[index_2]:
+                    exists = True
+                else:
+                    index_2 += 1
 
+            # handle case where current element from self was NOT found in second_bag
+            if not exists:
+                return False
 
+        # all tests have passed, so return True
+        return True
 
 
 # BASIC TESTING
