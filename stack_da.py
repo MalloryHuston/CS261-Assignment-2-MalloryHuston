@@ -1,7 +1,7 @@
 # Course: CS261 - Data Structures
-# Student Name:
-# Assignment:
-# Description:
+# Student Name: Mallory Huston
+# Assignment: 2, Stack ADT
+# Description: Implementation of the Stack ADT class as described in the given specifications.
 
 from dynamic_array import *
 
