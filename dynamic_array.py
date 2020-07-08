@@ -1,7 +1,7 @@
 # Course: CS261 - Data Structures
 # Student Name: Mallory Huston
 # Assignment: 2, Dynamic Array
-# Description:
+# Description: Implementation of the Dynamic Array class as described in the given specifications.
 
 
 class DynamicArrayException(Exception):
