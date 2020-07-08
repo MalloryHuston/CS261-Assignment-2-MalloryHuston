@@ -33,27 +33,34 @@ class Queue:
 
     def enqueue(self, value: object) -> None:
         """
-        TODO: Write this implementation
+        Adds specified object to the end of the Queue
         """
-        return
+        self.da.append(value)
 
     def dequeue(self) -> object:
         """
-        TODO: Write this implementation
+        Removes and returns value from beginning of the Queue
         """
-        return None
+        # handle case where Queue is empty
+        if self.da.is_empty():
+            raise QueueException
+
+        # reference first element of the Queue, remove element, and return the element
+        beginning_element = self.da.get_at_index(0)
+        self.da.remove_at_index(0)
+        return beginning_element
 
     def is_empty(self) -> bool:
         """
-        TODO: Write this implementation
+        Indicates whether Queue is empty
         """
-        return False
+        return self.da.is_empty()
 
     def size(self) -> int:
         """
-        TODO: Write this implementation
+        Returns number of elements in Queue
         """
-        return 0
+        return self.da.size
 
 
 # BASIC TESTING
