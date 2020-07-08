@@ -12,6 +12,32 @@ class DynamicArrayException(Exception):
     pass
 
 
+def quick_sort_helper(arr: [], low: int, high: int) -> int:
+    """
+    Sorts elements to the left and the right of the high index and returns a newly sorted index
+    """
+    # designate highest index as our target element to compare to
+    target = arr[high]
+
+    # initialize index to help place elements that are smaller than the target
+    index_1 = low - 1
+
+    # iterate through array and sort to the left and right of the target
+    for index_2 in range(low, high, 1):
+        if arr[index_2] < target:
+            index_1 += 1
+            temp = arr[index_1]
+            arr[index_1] = arr[index_2]
+            arr[index_2] = temp
+
+    # place target element to right of final element placed that was less than target
+    arr[high] = arr[index_1 + 1]
+    arr[index_1 + 1] = target
+
+    # return index of newly sorted target element
+    return index_1 + 1
+
+
 class DynamicArray:
     def __init__(self, start_array=None):
         """
@@ -34,7 +60,7 @@ class DynamicArray:
         DO NOT CHANGE THIS METHOD IN ANY WAY
         """
         out = "DYN_ARR Size/Cap: "
-        out += str(self.size) + "/"+ str(self.capacity)
+        out += str(self.size) + "/" + str(self.capacity)
         out += " " + str(self.data[:self.size])
         return out
 
@@ -43,20 +69,21 @@ class DynamicArray:
         If given valid input, sets a new storage list to the data attribute
         of the given capacity containing the same elements in the same index
         """
-        # Guard against new_capacity being zero or less than current size
-        if (new_capacity == 0) or (new_capacity < self.size):
+        # handle case where invalid new_capacity is passed
+        if not isinstance(new_capacity, int) or new_capacity < 1:
             return
 
-        # Initialize a new list with capacity of new_capacity
+        # handle case where new_capacity < self.size
+        if new_capacity < self.size:
+            return
+
+        # create new (larger) list, copy existing data over, reference w/ self.data
+        copy_range = 0
         new_data = [None] * new_capacity
-
-        # Copy data to the new list
-        for i in range(self.size):
-            new_data[i] = self.data[i]
-
-        # Set the new capacity and data
+        for index in range(self.size):
+            new_data[index] = self.data[index]
+        self.data = new_data
         self.capacity = new_capacity
-        self.data     = new_data
 
         return
 
@@ -65,11 +92,10 @@ class DynamicArray:
         Adds the given value to the next available index in the data
         attribute, doubling it's capacity if full
         """
-        # Check if storage is full and double capacity if true
-        if self.is_full():
+        if self.size == self.capacity:
             self.resize(self.capacity * 2)
 
-        # Set value to next open index and increment size
+        # add value to next available index in self.data
         self.data[self.size] = value
         self.size += 1
 
@@ -80,28 +106,23 @@ class DynamicArray:
         If valid index given, inserts the given value into the data
         attribute list at the given index, shifting existing values
         one index higher if necessary, and doubling the data attribute
-        list capacity if it is full.  Raises a DynamicArrayException
-        if invalid index value given.
+        list capacity if it is full.
         """
-        # Guard against invalid index
-        if (index < 0) or (index > self.size):
+        # handle case where invalid index is passed
+        if index < 0 or index > self.size:
             raise DynamicArrayException
 
-        # Check if storage is full and double capacity if true
-        if self.is_full():
-            self.resize(self.size * 2)
+        # handle case where self.size == self.capacity
+        if self.size == self.capacity:
+            self.resize(self.capacity * 2)
 
-        # Shift elements to make room at index for the new value.
-        # This is a noop if index is appending to the end of the
-        # current data attribute list
-        for current_index in range(self.size, index, -1):
-            self.data[current_index] = self.data[current_index - 1]
+        # shift elements over to make room for new element at specified index
+        for num in range(self.size, index - 1, -1):
+            self.data[num] = self.data[num - 1]
 
-        # Set value at the given index and increment size
+        # insert value at specified index
         self.data[index] = value
-        self.size       += 1
-
-        return
+        self.size += 1
 
     def get_at_index(self, index: int) -> object:
         """
@@ -118,45 +139,107 @@ class DynamicArray:
 
     def remove_at_index(self, index: int) -> None:
         """
-        TODO: Write this implementation
+        Removes object at index passed
         """
-        return
+        # handle case where invalid index is passed
+        if not isinstance(index, int) or index < 0 or index > self.size - 1:
+            raise DynamicArrayException
+
+        # handle case where self.capacity requires adjustment
+        if self.size < (self.capacity / 4) and self.size * 2 >= 10:
+            self.resize(self.size * 2)
+        elif self.size < (self.capacity / 4) and self.size * 2 < 10:
+            self.resize(10)
+
+        # remove element at specified index via shifting elements
+        for elt in range(index, self.size - 1, 1):
+            self.data[elt] = self.data[elt + 1]
+        self.data[self.size - 1] = None
+        self.size -= 1
 
     def is_empty(self) -> bool:
         """
-        TODO: Write this implementation
+        Returns boolean indicating whether self.data is empty
         """
-        return False
+        if self.data[0] is None:
+            return True
+        else:
+            return False
 
     def length(self) -> int:
         """
-        TODO: Write this implementation
+        Returns number of objects currently stored in DynamicArray
         """
-        return 0
+        return self.size
 
     def slice(self, start_index: int, quantity: int) -> object:
         """
-        TODO: Write this implementation
+        Returns new DynamicArray initialized based on parameters
         """
-        return DynamicArray()
+        # handle case where start_index argument is invalid
+        if not isinstance(start_index, int) or start_index < 0 or start_index > self.size - 1:
+            raise DynamicArrayException
+
+        # handle case where combination of start_index and quantity arguments are invalid
+        if (start_index + quantity - 1) > self.size - 1:
+            raise DynamicArrayException
+
+        # initialize new DynamicArray using slice of current self.data and return to user
+        end_index = start_index + quantity
+        initializer = [self.data[i] for i in range(start_index, end_index, 1)]
+        return DynamicArray(initializer)
 
     def reverse(self) -> None:
         """
-        TODO: Write this implementation
+        Reverses the order of the elements/objects in self.dat
         """
-        return
+        # determine range over which we just swap elements
+        swap_range = 0
+        if self.size % 2 == 0:
+            swap_range = int(self.size / 2)
+        else:
+            swap_range = int((self.size - 1) / 2)
+
+        # iterate over swap_range and swap elements
+        for index in range(swap_range):
+            temp = self.data[index]
+            self.data[index] = self.data[self.size - index - 1]
+            self.data[self.size - index - 1] = temp
 
     def sort(self) -> None:
         """
-        TODO: Write this implementation
+        Sorts self.data for DynamicArray object
         """
-        return
+        # copy non-NoneType elements of self.data into a working list
+        working_list = [None] * self.size
+        for index in range(self.size):
+            working_list[index] = self.data[index]
+
+        # sort working_list and copy sorted elements back into self.data
+        self.quick_sort(working_list, 0, self.size - 1)
+        for index in range(self.size):
+            self.data[index] = working_list[index]
+
+    def quick_sort(self, arr: [], low: int, high: int) -> None:
+        """
+        Sorts array utilizing quick sort
+        """
+        # recursively work through list until list is partitioned into single elements (low < high)
+        if low < high:
+            # use helper function to sort highest index element and return index of that element
+            div_index = quick_sort_helper(arr, low, high)
+
+            # recursively call quick_sort() on two sublists to left/right of sorted element
+            self.quick_sort(arr, low, div_index - 1)
+            self.quick_sort(arr, div_index + 1, high)
 
     def merge(self, another_list: object) -> None:
         """
-        TODO: Write this implementation
+        Appends all objects from input DynamicArray to current DA
         """
-        return
+        # iterate through another_list.data and self.append() to current DA
+        for index in range(another_list.size):
+            self.append(another_list.data[index])
 
     def is_full(self) -> bool:
         """
@@ -167,9 +250,6 @@ class DynamicArray:
             return True
 
         return False
-
-
-
 
 
 # BASIC TESTING
