@@ -1,6 +1,6 @@
 # Course: CS261 - Data Structures
-# Student Name:
-# Assignment:
+# Student Name: Mallory Huston
+# Assignment: 2, Bag ADT
 # Description: Implementation of the Bag ADT class as described in the given specifications.
 
 from dynamic_array import *
