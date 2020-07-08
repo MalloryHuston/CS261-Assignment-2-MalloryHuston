@@ -33,35 +33,47 @@ class Stack:
 
     def push(self, value: object) -> None:
         """
-        TODO: Write this implementation
+        Adds specified element to top of the Stack
         """
-        return
+        self.da.append(value)
 
     def pop(self) -> object:
         """
-        TODO: Write this implementation
+        Removes and returns most recently added element from the Stack
         """
-        return None
+        # handle case where Stack is empty
+        if self.da.is_empty():
+            raise StackException
+
+        # reference return object with a convenient variable
+        return_object = self.da.get_at_index(self.da.size - 1)
+
+        # remove object from top of the stack and return element
+        self.da.remove_at_index(self.da.size - 1)
+        return return_object
 
     def top(self) -> object:
         """
-        TODO: Write this implementation
+        Returns value of top element in Stack
         """
-        return None
+        # handle case where Stack is empty
+        if self.da.is_empty():
+            raise StackException
+
+        # return highest index element
+        return self.da.get_at_index(self.da.size - 1)
 
     def is_empty(self) -> bool:
         """
-        TODO: Write this implementation
+        Returns boolean indication of whether Stack is empty
         """
-        return False
+        return self.da.is_empty()
 
     def size(self) -> int:
         """
-        TODO: Write this implementation
+        Returns number of elements currently in the Stack
         """
-        return 0
-
-
+        return self.da.size
 
 
 # BASIC TESTING
